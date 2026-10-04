@@ -15,6 +15,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # SỬA LỖI: Tự động sửa lỗi phân quyền bản quyền SDK và Gradle trên Linux
+      - name: Cap quyen thuc thi he thong
+        run: |
+          chmod +x -R . || true
+
+      # SỬA LỖI: Sắp xếp cấu hình Java tương thích tuyệt đối với Buildozer mới nhất
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Khoi tao Cache Buildozer
         uses: actions/cache@v4
         with:
@@ -36,3 +48,4 @@ jobs:
         with:
           name: App-Quay-So-Moi-Nhat
           path: bin/*.apk
+
