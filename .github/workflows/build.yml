@@ -15,25 +15,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Khởi tạo Python 3.11 riêng biệt (Không ghi đè hệ thống)
       - name: Thiet lap Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          update-environment-path: true
 
-      # Ép Buildozer nhận diện đúng lệnh python3.11 làm hostpython
-      - name: Thiet lap bien moi truong Python
-        run: |
-          echo "FOO=bar" >> $GITHUB_ENV
-          sudo ln -sf /opt/hostedtoolcache/Python/3.11.*/x64/bin/python3 /usr/local/bin/python3
-          sudo ln -sf /opt/hostedtoolcache/Python/3.11.*/x64/bin/python3 /usr/bin/python3
-
+      # Cài đặt các gói phụ thuộc bằng Python mặc định của Ubuntu trước
       - name: Cai dat phu thuoc he thong
         run: |
-          sudo apt update
+          sudo apt-get update
           sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libssl-dev libffi-dev libgdbm-dev libsqlite3-dev tk-dev libb2-dev liblzma-dev libreadline-dev uuid-dev
-          python3 -m pip install --upgrade pip
-          python3 -m pip install "cython<3.0.0" virtualenv buildozer
+
+      # Dùng Python 3.11 để cài đặt Buildozer và các thư viện liên quan
+      - name: Cai dat Buildozer va Cython
+        run: |
+          python3.11 -m pip install --upgrade pip
+          python3.11 -m pip install "cython<3.0.0" virtualenv buildozer
 
       - name: Khoi tao Cache Buildozer
         uses: actions/cache@v4
@@ -45,12 +43,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
+      # MẸO QUAN TRỌNG: Tạo liên kết lệnh tạm thời chỉ trong bước này để Buildozer nhận diện đúng
       - name: Tien hanh Build APK bang Buildozer
         run: |
-          yes | python3 -m buildozer android debug
-        env:
-          # Ép buildozer sử dụng đúng file thực thi python3.11
-          PATH: /opt/hostedtoolcache/Python/3.11.11/x64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          mkdir -p bz_bin
+          ln -s $(which python3.11) bz_bin/python3
+          export PATH=$(pwd)/bz_bin:$PATH
+          yes | python3.11 -m buildozer android debug
 
       - name: Tai file APK len Artifacts
         uses: actions/upload-artifact@v4
