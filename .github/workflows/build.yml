@@ -9,23 +9,18 @@ on:
 jobs:
   build:
     name: Bien dich file APK
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # SỬA LỖI: Tự động sửa lỗi phân quyền bản quyền SDK và Gradle trên Linux
-      - name: Cap quyen thuc thi he thong
+      - name: Cai dat phu thuoc he thong
         run: |
-          chmod +x -R . || true
-
-      # SỬA LỖI: Sắp xếp cấu hình Java tương thích tuyệt đối với Buildozer mới nhất
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+          sudo apt update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libssl-dev libffi-dev libgdbm-dev libsqlite3-dev tk-dev libb2-dev liblzma-dev libreadline-dev uuid-dev
+          pip3 install --upgrade pip
+          pip3 install buildozer cython virtualenv
 
       - name: Khoi tao Cache Buildozer
         uses: actions/cache@v4
@@ -37,15 +32,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
-      - name: Build APK voi Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          command: buildozer android debug
-          buildozer_version: stable
+      - name: Tien hanh Build APK bang Buildozer
+        run: |
+          # Đồng ý tự động với các điều khoản bản quyền của Android SDK nếu hệ thống hỏi
+          yes | buildozer android debug
 
       - name: Tai file APK len Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: App-Quay-So-Moi-Nhat
           path: bin/*.apk
-
