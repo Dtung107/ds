@@ -15,12 +15,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # BƯỚC QUAN TRỌNG: Cài đặt và kích hoạt Python 3.11 làm mặc định cho hệ thống
+      - name: Thiet lap Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          update-environment-path: true
+
       - name: Cai dat phu thuoc he thong
         run: |
           sudo apt update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libssl-dev libffi-dev libgdbm-dev libsqlite3-dev tk-dev libb2-dev liblzma-dev libreadline-dev uuid-dev
-          pip3 install --upgrade pip
-          pip3 install buildozer cython virtualenv
+          sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libssl-dev libffi-dev libgdbm-dev libsqlite3-dev tk-dev libb2-dev liblzma-dev libreadline-dev uuid-dev
+          
+          # Ép pip sử dụng Python 3.11 vừa cài đặt để cài Cython và Buildozer
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "cython<3.0.0" virtualenv buildozer
 
       - name: Khoi tao Cache Buildozer
         uses: actions/cache@v4
@@ -34,8 +43,8 @@ jobs:
 
       - name: Tien hanh Build APK bang Buildozer
         run: |
-          # Đồng ý tự động với các điều khoản bản quyền của Android SDK nếu hệ thống hỏi
-          yes | buildozer android debug
+          # Chạy Buildozer thông qua môi trường Python 3.11
+          yes | python3 -m buildozer android debug
 
       - name: Tai file APK len Artifacts
         uses: actions/upload-artifact@v4
