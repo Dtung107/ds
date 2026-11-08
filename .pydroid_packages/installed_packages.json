@@ -1,0 +1,17 @@
+[
+  {
+    "name": "pyfiglet",
+    "version": "1.0.4",
+    "installedAt": "2026-11-01T00:00:00.000Z"
+  },
+  {
+    "name": "colorama",
+    "version": "0.4.6",
+    "installedAt": "2026-11-02T01:16:33.300Z"
+  },
+  {
+    "name": "cowsay",
+    "version": "6.1",
+    "installedAt": "2026-11-06T14:26:00.179Z"
+  }
+]
