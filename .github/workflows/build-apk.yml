@@ -46,10 +46,13 @@ jobs:
         run: |
           npm run build
 
-      - name: 8. Initialize & Sync Capacitor Android
+      - name: 8. Initialize & Sync Capacitor Android + Custom App Icon
         run: |
           if [ ! -d "android" ]; then
             npx cap add android
+          fi
+          if [ -d "resources/android-res" ]; then
+            cp -rf resources/android-res/* android/app/src/main/res/
           fi
           npx cap sync android
 
@@ -87,3 +90,4 @@ jobs:
             Tải tệp `app-debug.apk` đính kèm bên dưới và cài đặt trực tiếp trên điện thoại Android của bạn!
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
